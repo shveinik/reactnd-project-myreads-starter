@@ -1,34 +1,63 @@
-import React, {Component} from 'react'
+import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
+import BookList from './BookList.js'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 
+class BookSearch extends React.Component {
 
-class BookList extends React.Component{
-  
-  static propTypes = {
+constructor(props){
+    super(props);
+    this.state = {
+        books:[],
+        query:''
+        
+    }
+}
+
+searchBook = (query) => {
+    if(query.length>0){
+        BooksAPI.search(query).then(res=>{
+        if(!res.error){
+            this.setState({
+                books:res  
+            })
+
+         }
+    })
+}
+
+}
+
+updateQuery = (query) => {
+    this.setState({ query: query.trim() })
+    this.searchBook(this.state.query)
     
-    }
-      state = {
-      book:{},
-      newShelf:'' 
-    }
 
+}
+  clearQuery = () => {
+    this.setState({ query: '' })
+   
+}
+
+render(){
+    let books = this.state.books
+    const {upd} = this.props
+
+    return(
   
-    render(){
-        // let  newShelf  = this.state
-        let { books } = this.props
-        const { upd } = this.props
-        let shelf = this.props
-        let booksToShow = books.filter((b)=>b.shelf.toLowerCase() === this.props.shelf.toLowerCase().replace(/\s+/g,''))
-        
-        return(
-        
-          <div className="bookshelf-books">
+        <div>
+        <input 
+        type="search" 
+        placeholder="Search by title or author"
+        value={this.state.query}
+        onChange={(event) => this.updateQuery(event.target.value)}
+                             />
+        <div className="bookshelf-books">
             <ol className="books-grid">
-             {booksToShow.map((book)=>(
+              {books.map((book)=>(
               <li key={book.id}>
                 <div className="book">
                   <div className="book-top">
@@ -51,10 +80,9 @@ class BookList extends React.Component{
               ))}
             </ol>
           </div>
-        )
-    }
+        </div>
+    )
+}
 }
 
-
-
-export default BookList
+export default BookSearch;
