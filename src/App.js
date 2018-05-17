@@ -2,7 +2,7 @@ import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookList from './BookList.js'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 import BookSearch from './BookSearch.js'
 import { Link } from 'react-router-dom'
 import { Route } from 'react-router-dom'
@@ -40,6 +40,9 @@ updateBookFunction(book, shelf){
 
 
   render() { 
+   let myBooks = []
+   this.state.books.map((book)=>{myBooks.push(book)})
+
     return (
       <div className="app">
       <Route exact path='/search' render={() => (
@@ -47,7 +50,7 @@ updateBookFunction(book, shelf){
           <div className="search-books-bar">
               <Link to='/'className="close-search">Close</Link>
               <div className="search-books-input-wrapper">
-                    <BookSearch upd={this.updateBookFunction}/>
+                    <BookSearch my={myBooks} upd={this.updateBookFunction}/>
                   </div>
                 </div>
               <div className="search-books-results">
