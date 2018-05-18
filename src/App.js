@@ -2,7 +2,6 @@ import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookList from './BookList.js'
-// import PropTypes from 'prop-types'
 import BookSearch from './BookSearch.js'
 import { Link } from 'react-router-dom'
 import { Route } from 'react-router-dom'
@@ -29,6 +28,22 @@ class BooksApp extends React.Component {
      
   }
 
+
+  debounce(callback, wait, context = this) {
+    let timeout = null 
+    let callbackArgs = null
+    
+    const later = () => callback.apply(context, callbackArgs)
+    
+    return function() {
+      callbackArgs = arguments
+      clearTimeout(timeout)
+      timeout = setTimeout(later, wait)
+    }
+  }
+
+ 
+
 updateBookFunction(book, shelf){
   BooksAPI.update(book, shelf).then((res)=>{
         book.shelf = shelf
@@ -37,6 +52,7 @@ updateBookFunction(book, shelf){
   })
   
  }
+
 
 
   render() { 

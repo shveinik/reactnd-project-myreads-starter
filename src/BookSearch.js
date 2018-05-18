@@ -1,9 +1,6 @@
 import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
-// import BookList from './BookList.js'
-// import PropTypes from 'prop-types'
-// import { Link } from 'react-router-dom'
 
 
 class BookSearch extends React.Component {
@@ -13,74 +10,92 @@ constructor(props){
     this.state = {
         books:[],
         query:''
-        
+
     }
 }
 
+debounce(callback, wait, context = this) {
+  let timeout = null 
+  let callbackArgs = null
+  
+  const later = () => callback.apply(context, callbackArgs)
+  
+  return function() {
+    callbackArgs = arguments
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+
 searchBook = (query) => {
-    if(query.length>0){
-        BooksAPI.search(query).then(res=>{
-        if(!res.error){
-            this.setState({
-                books:res  
-            })
-         }
-    })
+    if(query!==''){
+      BooksAPI.search(query).then(res=>{
+      if(res !== undefined && !res.error){
+          this.setState({
+              books:res
+          })
+       }
+       else{
+         this.clearQuery()
+       }
+  })
+
+    }else{
+      this.clearQuery()
+    }
+
+
+        
+
 }
 
 
-}
 
 
 clearQuery = () => {
-    // this.setState({query: ''})
     this.setState({books: []})
 }
 
 updateQuery = (query) => {
-  this.setState({ query : query })
-  this.searchBook(this.state.query)  
-  
+  this.setState({ query : query }, () => this.searchBook(this.state.query))
+
 }
 
+
+// updateQuery = this.debounce((query) => {
+// this.setState({ query : query }, () => this.searchBook(this.state.query)) , console.log(this.state.query) },1000)
+
+
+
+
+
+
+
+
 render(){
-    let books = this.state.books
+    let booksToShow = this.state.books
     const {upd} = this.props
-    let booksToShow
     let {my} = this.props
 
 
-  
-
-if (this.state.books.length>0)
-
-{
-    booksToShow = books
-
-}else{
-
-    booksToShow = []
-
-}
-
     return(
-  
+
         <div>
-        <input 
-        type="search" 
+        <input
+        type="search"
         placeholder="Search by title or author"
         value={this.state.query}
         onChange={(event) => this.updateQuery(event.target.value)}
                              />
         <div className="bookshelf-books">
 
-        <button onClick={()=>{this.clearQuery()}}>Clear</button>
 
             <ol className="books-grid">
               {booksToShow.map((book)=>(
                                 my.map((m)=>m.id===book.id && (book.shelf=m.shelf)),
                                 book.shelf===undefined && (book.shelf = 'none'),
-                                book.imageLinks? 
+                                book.imageLinks?
               <li key={book.id}>
                 <div className="book">
                   <div className="book-top">
